@@ -99,6 +99,24 @@ async def test_register_no_nickname(db_session, email_service):
     }
     user = await UserService.register_user(db_session, dummy_data, email_service)
     assert user is not None
+
+async def test_register_no_duplicate_email_with_case_sensitivity(db_session, email_service): 
+    dummy_data_1 = {
+        "email": "duplicate_test@gmail.com",
+        "password": "duplicate_test",
+        "nickname": "dummy-nickname",
+        "role": UserRole.ADMIN
+    }
+    dummy_data_2 = {
+        "email": "Duplicate_Test@gmail.com",
+        "password": "duplicate_test",
+        "nickname": "dummy-nickname1",
+        "role": UserRole.ADMIN
+    }
+    user = await UserService.register_user(db_session, dummy_data_1, email_service)
+    assert user is not None
+    new_user = await UserService.register_user(db_session, dummy_data_2, email_service)
+    assert new_user is None
     
 # Test updating a user with valid data
 async def test_update_user_valid_data(db_session, user):
