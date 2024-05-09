@@ -30,7 +30,7 @@ class UserBase(BaseModel):
 
     _validate_urls = validator('profile_picture_url', 'linkedin_profile_url', 'github_profile_url', pre=True, allow_reuse=True)(validate_url)
 
-    @validator
+    @validator('email')
     def validate_emails(cls, v):
         lowercase_email = v.lower()
         return lowercase_email
