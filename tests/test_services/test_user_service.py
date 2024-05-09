@@ -61,6 +61,45 @@ async def test_get_by_email_user_does_not_exist(db_session):
     retrieved_user = await UserService.get_by_email(db_session, "non_existent_email@example.com")
     assert retrieved_user is None
 
+async def test_register_no_duplicate_email(db_session, email_service): 
+    dummy_data = {
+         "email": "duplicate_test@gmail.com",
+         "password": "duplicate_test",
+         "nickname": generate_nickname(),
+         "role": UserRole.ADMIN
+    }
+    user = await UserService.register_user(db_session, dummy_data, email_service)
+    assert user is not None
+    new_user = await UserService.register_user(db_session, dummy_data, email_service)
+    assert new_user is None
+
+async def test_register_no_duplicate_nickname(db_session, email_service): 
+    dummy_data_1 = {
+        "email": "duplicate_test@gmail.com",
+        "password": "duplicate_test",
+        "nickname": "dummy-nickname",
+        "role": UserRole.ADMIN
+    }
+    dummy_data_2 = {
+        "email": "duplicate_test@gmail.com",
+        "password": "duplicate_test",
+        "nickname": "dummy-nickname",
+        "role": UserRole.ADMIN
+    }
+    user = await UserService.register_user(db_session, dummy_data_1, email_service)
+    assert user is not None
+    new_user = await UserService.register_user(db_session, dummy_data_2, email_service)
+    assert new_user is None
+
+async def test_register_no_nickname(db_session, email_service): 
+    dummy_data = {
+        "email": "duplicate_test@gmail.com",
+        "password": "duplicate_test",
+        "role": UserRole.ADMIN
+    }
+    user = await UserService.register_user(db_session, dummy_data, email_service)
+    assert user is not None
+    
 # Test updating a user with valid data
 async def test_update_user_valid_data(db_session, user):
     new_email = "updated_email@example.com"
